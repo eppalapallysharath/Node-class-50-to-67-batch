@@ -1,0 +1,16 @@
+{
+  "name": "node-class-50-to-67-batch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "demo.js",
+  "scripts": {
+    "start": "node server.js",
+    "demo":"node demo.js",
+    "data":"node data/d.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
