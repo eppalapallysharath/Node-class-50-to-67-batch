@@ -29,12 +29,19 @@ app.get("/getAllStudents", (req, res) => {
 });
 
 app.get("/getStudent/:studentId", (req, res) => {
-  res.status(200).json({
+  const studentId = req.params.studentId
+  console.log(studentId)
+  const studentData = JSON.parse(fs.readFileSync(path.join(__dirname, "data", "students.json"), "utf-8"))
+  
+  const student = studentData.find((val)=> val.studentID == studentId )
+  if(student !== undefined){
+      return res.status(200).json({
     status: "success",
-    data: {
-      studentID: req.params.studentId,
-    },
+    data: student,
   });
+  }else{
+    return res.status(404).json({status:"failed", message:"Student record not found"})
+  }
 });
 
 app.post("/addStudent", (req, res) => {
@@ -65,10 +72,46 @@ app.post("/addStudent", (req, res) => {
 });
 
 app.put("/updateStudent/:studentId", (req, res) => {
-  res.status(200).json({ status: "success", data: "updated successfully" });
+  const studentId = req.params.studentId
+  const studentsData = JSON.parse(fs.readFileSync(path.join(__dirname, "data", "students.json"), "utf-8"))
+  const student = studentsData.find(val => val.studentID == studentId)
+  if(student != undefined){
+      for( stu of studentsData){
+        if (stu.studentID == studentId){
+          stu.name=req.body.name
+          stu.class=req.body.class
+        }
+      }
+      fs.writeFile(path.join(__dirname, "data", "students.json"),JSON.stringify(studentsData),(err)=>{
+        if(err){
+          return res.status(500).json({status:"failed", message: "internal server error"})
+        }else{
+          return res.status(200).json({ status: "success", data: "updated successfully for student id " +studentId });
+        }
+      })
+  }else{
+    return res.status(404).json({status:"failed", message: "student record not found to update try again later"})
+  }
 });
 
 app.delete("/deleteStudent/:studentId", (req, res) => {
+  const studentId = req.params.studentId
+  const studentData = JSON.parse(fs.readFileSync(path.join(__dirname, "data", "students.json"), "utf-8"))
+  const student = studentData.find(val => val.studentID == studentId)
+
+  if(student != undefined){
+    const newStudentData = studentData.filter(val => val.studentID != studentId)
+    fs.writeFile(path.join(__dirname, "data", "students.json"), JSON.stringify(newStudentData), (err)=>{
+      if(err){
+        return res.status(500).json({status:"failed", message:"internal server error try again later"})
+      }else{
+        return res.status(200).json({status:"success", message:"student record delete successfully"})
+      }
+    })
+  }else{
+    return res.status(404).json({status:"failed", message:"no student record found with given id "+ studentId})
+  }
+
   res
     .status(200)
     .json({ status: "success", data: "delete student successfully" });
