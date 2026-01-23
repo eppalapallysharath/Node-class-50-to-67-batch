@@ -8,7 +8,7 @@ const cors = require("cors")
 
 app.use(cors({
   // origin:"http://localhost:5173"
-  origin:["http://localhost:5173","http://localhost:5174" ],
+  origin:["http://localhost:5173","http://localhost:5174" , "https://node-class-50-to-67-batch.vercel.app"],
   methods:["GET","POST", "DELETE", "PUT"]
 }))
 //middlewares to get data from req body
