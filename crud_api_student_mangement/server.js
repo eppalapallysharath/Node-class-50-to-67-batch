@@ -3,7 +3,14 @@ const app = express();
 const fs = require("fs");
 const path = require("path");
 const { v4 } = require("uuid");
+const cors = require("cors")
 
+
+app.use(cors({
+  // origin:"http://localhost:5173"
+  origin:["http://localhost:5173","http://localhost:5174" ],
+  methods:["GET","POST", "DELETE", "PUT"]
+}))
 //middlewares to get data from req body
 app.use(express.json());
 
@@ -15,7 +22,6 @@ app.get("/getAllStudents", (req, res) => {
   const studentsData = JSON.parse(
     fs.readFileSync(path.join(__dirname, "data", "students.json"), "utf-8"),
   );
-  console.log(studentsData.length);
   if (studentsData.length > 0) {
     return res.status(200).json({
       status: "success",
@@ -30,7 +36,6 @@ app.get("/getAllStudents", (req, res) => {
 
 app.get("/getStudent/:studentId", (req, res) => {
   const studentId = req.params.studentId
-  console.log(studentId)
   const studentData = JSON.parse(fs.readFileSync(path.join(__dirname, "data", "students.json"), "utf-8"))
   
   const student = studentData.find((val)=> val.studentID == studentId )
@@ -112,9 +117,6 @@ app.delete("/deleteStudent/:studentId", (req, res) => {
     return res.status(404).json({status:"failed", message:"no student record found with given id "+ studentId})
   }
 
-  res
-    .status(200)
-    .json({ status: "success", data: "delete student successfully" });
 });
 
 const port = 8080;
