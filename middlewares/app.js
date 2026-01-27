@@ -4,6 +4,10 @@ const url = require("url")
 const fs = require("fs")
 const path = require("path")
 const cors = require("cors")
+// importing users routes
+const users = require("./routes/users.js")
+const videos = require("./routes/videos.js")
+const history = require("./routes/history.js")
 
 //app level cors middleware
 app.use(cors({
@@ -47,7 +51,10 @@ app.use(checkApiLogs)
 
 // to get info from req.body than we need to use only these methods post, put, patch
 
-
+// router level middlewares
+app.use("/users",users)
+app.use("/api/v2/videos", videos)
+app.use("/api/v1/history", history)
 
 app.get("/",(req, res)=>{
     // console.log("api:","/", "method: ", req.method,)
@@ -69,6 +76,14 @@ app.post("/createOrder", (req, res)=>{
 app.post("/products",(req, res)=>{
     return res.send({message:"products info", data:req.body })
 })
+
+
+const errorMiddleware = (err, req, res, next)=>{
+    console.log("global error:",err)
+    res.status(400).send("there is error")
+}
+
+app.use(errorMiddleware)
 
 // 2nd example for application middlewares 
 const api_not_found=(req, res)=>{
