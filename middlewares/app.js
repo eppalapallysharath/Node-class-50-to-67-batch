@@ -8,6 +8,7 @@ const cors = require("cors")
 const users = require("./routes/users.js")
 const videos = require("./routes/videos.js")
 const history = require("./routes/history.js")
+const {errorMiddleware} = require("./middlewares/error.js")
 
 //app level cors middleware
 app.use(cors({
@@ -62,9 +63,15 @@ app.get("/",(req, res)=>{
 })
 
 
-app.get("/orders", (req, res)=>{
+app.get("/orders", (req, res, next)=>{
     // console.log("api:","/orders", "method: ", req.method)
-    return res.json({ message:"your order details", data:[]})
+   try {
+       return res.json({ message:"your order details", data:name, })
+   } catch (error) {
+        const er = new Error(error)
+        er.status = 500
+        next(er)
+   }
 })
 
 
@@ -78,18 +85,18 @@ app.post("/products",(req, res)=>{
 })
 
 
-const errorMiddleware = (err, req, res, next)=>{
-    console.log("global error:",err)
-    res.status(400).send("there is error")
-}
 
-app.use(errorMiddleware)
 
 // 2nd example for application middlewares 
 const api_not_found=(req, res)=>{
     res.status(404).send({message:"API not found with given endpoint and method", method:req.method ,api_name: url.parse(req.path).path})
 }
 app.use(api_not_found)
+
+// error handling middleware
+
+
+app.use(errorMiddleware)
 
 
 const port = 3000
