@@ -26,7 +26,7 @@ exports.updateFruits = async(req, res)=>{
         const checkFruit =  await FruitsModel.findOne({_id: Object(fruitId)})
         if(checkFruit){
             // const updateDoc = await FruitsModel.updateOne({_id:Object(fruitId)}, {$set:{fruit_name:req.body.fruit_name}}, {new:true})
-            const updateDoc = await FruitsModel.findByIdAndUpdate(fruitId, {$set:{fruit_name:req.body.fruit_name}}, {new:true})
+            const updateDoc = await FruitsModel.findByIdAndUpdate(fruitId, {$set:{fruit_name:req.body.fruit_name, color:req.body.color}}, {new:true})
             console.log(updateDoc)
             res.json({message: "updated successfully", updateDoc})
         }else{
