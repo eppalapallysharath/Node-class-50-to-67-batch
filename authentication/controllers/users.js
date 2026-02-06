@@ -1,5 +1,7 @@
 const authModel = require("../models/auth.js")
 const bcryptjs = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 exports.login= async(req, res)=>{
     try {
@@ -14,7 +16,9 @@ exports.login= async(req, res)=>{
             if(checkuser){
                 const decryptPassword = await bcryptjs.compare(req.body.password, checkuser.password)
                 if(decryptPassword){
-                    return res.status(200).json({message: "login successfully", userinfo:{email:checkuser.email, name:checkuser.name, bio:checkuser.bio} })
+                    const token = await jwt.sign({email:checkuser.email},process.env.jwt_secret_key, {expiresIn:"3m", algorithm:"HS256"} )
+                    console.log(token)
+                    return res.status(200).json({message: "login successfully", userinfo:{email:checkuser.email, name:checkuser.name, bio:checkuser.bio}, token:token})
                 }else{
                     return res.status(429).json({message:"invalid credentials"})
                 }
@@ -24,6 +28,7 @@ exports.login= async(req, res)=>{
         }
 
     } catch (error) {
+        console.log(error)
        res.status(400).json({error:error}) 
     }
      
@@ -59,8 +64,40 @@ exports.signup = async(req, res)=>{
     } catch (error) {
         console.log(error)
      res.status(400).json(error.message)   
+    }   
+}
+
+
+exports.getProfile = async(req, res)=>{
+    try {   
+        const profileData = await authModel.findById(req.user.id)
+        res.json({profile_info:profileData})
+    //    if(req.headers.authorization){
+    //         if(req.headers.authorization.startsWith("Bearer")){
+    //             const token = req.headers.authorization.split(" ")[1]
+    //             const decodedToken =  await jwt.verify(token, process.env.jwt_secret_key)
+    //             const checkuser = await authModel.findOne({email:decodedToken.email})
+    //             if(checkuser){
+    //                 res.status(200).json(checkuser)
+    //             }else{
+    //                 res.status(403).json({message: "access denied"})
+    //             }
+    //         }else{
+    //             res.status(401).send("not ok")
+
+    //         }
+    //    }else{
+    //     res.status(401).send("not ok")
+    //    }
+        
+    } catch (error) {
+        // if(error.message == "jwt expired"){
+        //     res.status(401).json({message:"token expired"})
+        // }
+        // if(error.message =="invalid signature"){
+        //      res.status(401).json({message:"provide correct jwt token"})
+        // }
+
+        res.status(400).json(error)
     }
-   
-    
-    
 }
