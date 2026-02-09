@@ -13,3 +13,8 @@ exports.getProducts=async(req, res)=>{
         res.status(400).json(error)
     }
 }
+
+
+exports.addProducts = async(req, res)=>{
+    res.status(201).send("products added successfully")
+}

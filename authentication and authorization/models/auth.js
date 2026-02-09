@@ -12,8 +12,9 @@ const authSchema = new mongoose.Schema({
     },
     bio:{
         type:String, required:true, lowercase:true, trim:true
+    },user_type:{
+        type:String, default:"buyer", enum:["seller", "buyer", "superAdmin"]
     }
-
 },{timestamps:true})
 
 module.exports = mongoose.model("users",authSchema )

@@ -16,9 +16,9 @@ exports.login= async(req, res)=>{
             if(checkuser){
                 const decryptPassword = await bcryptjs.compare(req.body.password, checkuser.password)
                 if(decryptPassword){
-                    const token = await jwt.sign({email:checkuser.email},process.env.jwt_secret_key, {expiresIn:"3m", algorithm:"HS256"} )
+                    const token = await jwt.sign({email:checkuser.email},process.env.jwt_secret_key, {expiresIn:"24h", algorithm:"HS256"} )
                     console.log(token)
-                    return res.status(200).json({message: "login successfully", userinfo:{email:checkuser.email, name:checkuser.name, bio:checkuser.bio}, token:token})
+                    return res.status(200).json({message: "login successfully", userinfo:{email:checkuser.email, name:checkuser.name, bio:checkuser.bio, user_type: checkuser.user_type}, token:token})
                 }else{
                     return res.status(429).json({message:"invalid credentials"})
                 }

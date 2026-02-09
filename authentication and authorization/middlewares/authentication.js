@@ -12,11 +12,10 @@ exports.authentications = async (req, res, next) => {
           process.env.jwt_secret_key,
         );
         const checkuser = await authModel.findOne({
-          email: decodedToken.email,
-        }, {email:true});
+          email: decodedToken.email
+        }, {email:true, user_type:true});
         if (checkuser) {
-            
-            req.user={email:checkuser.email, id:checkuser._id}
+            req.user={email:checkuser.email, id:checkuser._id, role:checkuser.user_type }
             next()
         } else {
           res.status(403).json({ message: "access denied" });
